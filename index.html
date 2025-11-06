@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shorty - Your Business URL Shortener</title>
+    <style>
+        /* --- Global Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            line-height: 1.6;
+            
+            /* --- STICKY FOOTER CHANGES --- */
+            display: flex;          /* 1. Make body a flex container */
+            flex-direction: column; /* 2. Stack children vertically */
+            min-height: 100vh;      /* 3. Ensure body is at least screen height */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        /* --- Header / Navigation --- */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 5%;
+            position: sticky;
+            top: 0%;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        
+        /* --- Tab Navigation --- */
+        .tab-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .tab-link {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 22px 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        
+        .tab-link:hover { color: #000; }
+        
+        .tab-link.active {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+        }
+        
+        /* --- STICKY FOOTER CHANGE --- */
+        /* 4. Tell <main> to take all extra space */
+        main {
+            flex-grow: 1;
+        }
+
+        /* --- Tab Content --- */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Home Tab (Hero Section) --- */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.125rem;
+            color: #495057;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+        
+        .cta-button { /* Call to action button */
+            background-color: #0d6efd;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .cta-button:hover { background-color: #0b5ed7; }
+
+        /* --- Main Card Styles (for Create/Analytics) --- */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        /* --- Form Elements --- */
+        .form-group { margin-bottom: 1rem; }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+            outline: none;
+        }
+
+        button {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        button:hover { background-color: #0b5ed7; }
+
+        /* --- Result & Analytics --- */
+        .result {
+            margin-top: 1.5rem;
+            word-wrap: break-word;
+            line-height: 1.5;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .result strong { color: #000; }
+        .result a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .result a:hover { text-decoration: underline; }
+        .error { color: #dc3545; }
+        
+        /* --- Table Styles --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background-color: #fcfcfc; }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e9ecef;
+            margin-top: 2rem; /* Keeps space on long pages */
+            position: sticky;
+            bottom: 0%;
+            padding-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="/" class="logo">Short Link</a>
+            <div class="tab-links">
+                <a class="tab-link active" onclick="openTab(event, 'Home')">Home</a>
+                <a class="tab-link" onclick="openTab(event, 'Create')">Create Short Link</a>
+                <a class="tab-link" onclick="openTab(event, 'Analytics')">Link Analytics</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+
+        <div id="Home" class="tab-content" style="display: block;">
+            <div class="container">
+                <div class="hero">
+                    <h1>Connect and Analyze</h1>
+                    <p>
+                        Welcome to Short Link, your all-in-one solution for link management. 
+                        Transform long, cumbersome URLs into powerful, memorable, and trackable links. 
+                        Understand your audience with every click.
+                    </p>
+                    <a class="cta-button" onclick="document.querySelector('[onclick*=\'Create\']').click()">Get Started Now</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="Create" class="tab-content">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Create a Short Link</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="longUrl">Enter your long URL</label>
+                            <input type="text" id="longUrl" placeholder="https://www.your-very-long-url.com/example">
+                        </div>
+                        <button onclick="handleShorten()">Shorten Link</button>
+                        <div id="shorten-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Analytics" class="tab-content">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Link Analytics</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="shortId">Enter your Short ID</label>
+                            <input type="text" id="shortId" placeholder="e.g., Bkjx_S1l">
+                        </div>
+                        <button onclick="handleGetAnalytics()">Get Analytics</button>
+                        <div id="analytics-result" class="result" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Short Link. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = "https://url-shortner-zx8g.onrender.com";
+
+        function openTab(evt, tabName) {
+            const tabContent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+            const tabLinks = document.getElementsByClassName("tab-link");
+            for (let i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        async function handleShorten() {
+            const longUrl = document.getElementById('longUrl').value;
+            const resultDiv = document.getElementById('shorten-result');
+            if (!longUrl) {
+                resultDiv.innerHTML = '<span class="error">Please enter a URL.</span>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/url`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: longUrl }),
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                const shortUrl = `${API_BASE_URL}/${data.id}`;
+                resultDiv.innerHTML = `
+                    <strong>Success!</strong> Your short URL is:
+                    <br>
+                    <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+                `;
+                resultDiv.style.display = 'block';
+                document.getElementById('longUrl').value = '';
+            } catch (error) {
+                console.error("Error shortening URL:", error);
+                resultDiv.innerHTML = `<span class="error">Error: Could not shorten URL.</span>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function handleGetAnalytics() {
+            const shortId = document.getElementById('shortId').value;
+            const resultDiv = document.getElementById('analytics-result');
+            if (!shortId) {
+                resultDiv.innerHTML = '<span class="error">Please enter a Short ID.</span>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/url/analytics/${shortId}`);
+                if (!response.ok) {
+                    if(response.status === 404) {
+                        resultDiv.innerHTML = `<span class="error">Error: Short ID "${shortId}" not found.</span>`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    resultDiv.style.display = 'block';
+                    return;
+                }
+                const data = await response.json();
+                let outputHtml = `
+                    <p style="margin: 0; font-weight: 600;">Total Clicks: ${data.totalClicks}</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Created At: ${data.createdAt}</p>
+                `;
+                if (data.analytics && data.analytics.length > 0) {
+                    outputHtml += `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Visit Time (IST)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    data.analytics.forEach(visit => {
+                        outputHtml += `<tr><td>${visit.timestamp}</td></tr>`;
+                    });
+                    outputHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    outputHtml += `<p style="margin-top: 1rem;">No visit history yet.</p>`;
+                }
+                resultDiv.innerHTML = outputHtml;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                console.error("Error getting analytics:", error);
+                resultDiv.innerHTML = `<span class="error">Error: Could not fetch analytics.</span>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
